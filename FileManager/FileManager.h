@@ -11,6 +11,8 @@ namespace storage
 
         virtual Result<std::monostate, ErrorCode> createDirectory(const T &param) override;
 
+        virtual Result<std::monostate, ErrorCode> removeDirectory(const T &param) override;
+
         virtual Result<std::monostate, ErrorCode> createFile(const T &param) override;
 
         virtual Result<std::monostate, ErrorCode> removeFile(const T &param) override;

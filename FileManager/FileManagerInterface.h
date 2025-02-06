@@ -12,6 +12,8 @@ namespace storage
         virtual ~FileManagerInterface() = default;
 
         virtual Result<std::monostate, ErrorCode> createDirectory(const T &param) = 0;
+    
+        virtual Result<std::monostate, ErrorCode> removeDirectory(const T &param) = 0;
 
         virtual Result<std::monostate, ErrorCode> createFile(const T &param) = 0;
 

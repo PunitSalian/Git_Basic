@@ -37,6 +37,8 @@ cc_test (
         "FileManagerTest.cpp",
     ],
 
+    args = ["--gtest_output=stdout"],
+
     linkstatic = 1,
 
     deps = [

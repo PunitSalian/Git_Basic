@@ -7,6 +7,8 @@ namespace storage
     class FileManager : public FileManagerInterface<T>
     {
     public:
+        FileManager() {}
+
         virtual Result<std::monostate, ErrorCode> createDirectory(const T &param) override;
 
         virtual Result<std::monostate, ErrorCode> createFile(const T &param) override;
@@ -20,3 +22,5 @@ namespace storage
         virtual Result<size_t, ErrorCode> writeFile(const T &param, std::span<uint8_t> data) override;
     };
 }
+
+#include "FileManager.inl"

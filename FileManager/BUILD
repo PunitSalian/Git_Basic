@@ -16,7 +16,7 @@ cc_library (
 cc_library(
     name = "filemanager",
     srcs = [
-        "FileManager.cpp",
+        "FileManager.inl",
     ],
     hdrs = [
         "FileManager.h",
@@ -25,6 +25,7 @@ cc_library(
     deps = [
         ":filemanager_intf",
     ],
+
 
     visibility = ["//visibility:public"],
 )
@@ -35,7 +36,9 @@ cc_test (
     srcs = [
         "FileManagerTest.cpp",
     ],
-    
+
+    linkstatic = 1,
+
     deps = [
         ":filemanager",
         ":filemanager_intf",

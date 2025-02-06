@@ -15,15 +15,15 @@ bool is_err() const { return !is_ok;}
 bool is_okay() const { return is_ok;} 
 
 E error() {
-    if (is_err()) {
+    if (is_okay()) {
         throw std::runtime_error("Accessing error from a Success result");
     }
 
-    return err_.value();
+    return err_;
 }
 
 T value() {
-    if (is_ok) {
+    if (is_err()) {
         throw std::runtime_error(" Attempt to access Result from Error Result");
     }
 
@@ -31,8 +31,8 @@ T value() {
 }
 
 private:
-std::optional<E> err_;
-std::optional<T> val_;
 bool is_ok;
+E err_;
+T val_;
 
 };

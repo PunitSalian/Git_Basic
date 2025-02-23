@@ -3,10 +3,10 @@
 #include "FileManager.h"
 #include <iostream>
 
-
 TEST(FileCreate, FileCreateSuccessAndRemove)
 {
-    storage::FileManager<std::filesystem::path> f;
+    storage::FileManager<std::filesystem::path>
+        f;
     std::filesystem::path file = "/tmp/output.txt";
     f.createFile(file);
     // getFilesize should check the existance of file and return 0
@@ -15,7 +15,6 @@ TEST(FileCreate, FileCreateSuccessAndRemove)
     f.removeFile(file);
 
     EXPECT_EQ(f.getFilesize(file).is_err(), true);
-
 }
 
 TEST(DirectoryCreate, DirectoryCreateSuccessAndRemove)
@@ -28,7 +27,6 @@ TEST(DirectoryCreate, DirectoryCreateSuccessAndRemove)
     EXPECT_EQ(f.removeDirectory(dir).is_err(), false);
 
     EXPECT_EQ(std::filesystem::exists(dir), false);
-
 }
 
 TEST(FileReadWrite, WriteAndReadFile)
@@ -39,7 +37,7 @@ TEST(FileReadWrite, WriteAndReadFile)
     // getFilesize should check the existance of file and return 0
     EXPECT_EQ(f.getFilesize(file).value(), 0);
 
-    std::vector<uint8_t> wr = {1,2,3};
+    std::vector<uint8_t> wr = {1, 2, 3};
     f.writeFile(file, wr);
 
     EXPECT_EQ(f.getFilesize(file).value(), 3);
@@ -51,4 +49,6 @@ TEST(FileReadWrite, WriteAndReadFile)
     EXPECT_EQ(f.readFile(file, rb).is_err(), false);
 
     EXPECT_EQ(wr, rb);
+
+    f.removeFile(file);
 }

@@ -1,3 +1,5 @@
 common --enable_bzlmod
-build --cxxopt=-std=c++20
+build --cxxopt=-std=c++23
+build --host_cxxopt=-std=c++23
+
 

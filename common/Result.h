@@ -1,38 +1,40 @@
-#pragma once 
+#pragma once
 
 #include <optional>
-#include <exception>
-#include <stdexcept> 
+#include <stdexcept>
+#include <utility>
 
-template <typename T, typename E>
-class Result {
+template <typename T, typename E = std::runtime_error>
+class Result
+{
 public:
+    Result(T v) : val_(std::move(v)) {}
 
-Result(const T& v) : is_ok(true), val_(v) {}
-Result(const E& e) : is_ok(false), err_(e) {}
+    Result(E e) : err_(std::move(e)) {}
 
-bool is_err() const { return !is_ok;}
-bool is_okay() const { return is_ok;} 
+    bool is_err() const { return err_.has_value(); }
 
-E error() {
-    if (is_okay()) {
-        throw std::runtime_error("Accessing error from a Success result");
+    bool is_okay() const { return val_.has_value(); }
+
+    const E &error() const
+    {
+        if (is_okay())
+        {
+            throw std::runtime_error("Accessing error from a Success result");
+        }
+        return *err_;
     }
 
-    return err_;
-}
-
-T value() {
-    if (is_err()) {
-        throw std::runtime_error(" Attempt to access Result from Error Result");
+    const T &value() const
+    {
+        if (is_err())
+        {
+            throw std::runtime_error("Attempt to access value from an Error Result");
+        }
+        return *val_;
     }
-
-    return val_;
-}
 
 private:
-bool is_ok;
-E err_;
-T val_;
-
+    std::optional<T> val_;
+    std::optional<E> err_;
 };

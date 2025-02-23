@@ -30,6 +30,21 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
+cc_library  (
+    name = "filemanager_mock",
+
+    srcs = [
+        "FileManagerTest.h",
+    ],
+
+    deps = [
+        ":filemanager_intf",
+        "@googletest//:gtest_main",
+    ],
+
+    visibility = ["//visibility:public"],
+)
+
 cc_test (
     name = "filemanager_test",
 
@@ -49,3 +64,5 @@ cc_test (
 
     visibility = ["//visibility:public"],
 )
+
+

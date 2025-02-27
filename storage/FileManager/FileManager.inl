@@ -6,12 +6,12 @@
 template <typename T>
 Result<std::monostate, ErrorCode> storage::FileManager<T>::createDirectory(const T &param)
 {
-    if (std::filesystem::exists(param)) 
+    if (std::filesystem::exists(param))
     {
         return std::monostate();
     }
 
-    if (!std::filesystem::create_directory(param))
+    if (!std::filesystem::create_directories(param))
     {
         return ErrorCode::Unknown;
     }
@@ -22,7 +22,7 @@ Result<std::monostate, ErrorCode> storage::FileManager<T>::createDirectory(const
 template <typename T>
 Result<std::monostate, ErrorCode> storage::FileManager<T>::removeDirectory(const T &dir)
 {
-    if (!std::filesystem::exists(dir)) 
+    if (!std::filesystem::exists(dir))
     {
         return ErrorCode::FailToOpen;
     }

@@ -10,7 +10,7 @@ namespace git
     {
     public:
         InitCommand(storage::FileManagerInterface<std::filesystem::path> &f, GitConfig_intf &g) : f_(f), g_(g) {}
-        virtual Result<std::monostate, ErrorCode> execute() override;
+        virtual Result<std::monostate, ErrorCode> execute(std::vector<std::string> &&args) override;
 
     private:
         storage::FileManagerInterface<std::filesystem::path> &f_;

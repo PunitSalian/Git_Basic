@@ -10,6 +10,12 @@ cc_binary (
         ":init_command",
         "//storage/FileManager:filemanager",
         "//config:gitconfig",
+        ":add_command",
+        "@tclap//:tclap",
+        ":commit_command",
+       "//storage/Objectstore:blob",
+       "//utility/Sha:sha1",
+       "//utility/Compression:zlib",
     ],
 
     visibility = [
@@ -49,6 +55,52 @@ cc_library (
         ":command_intf",
         "//storage/FileManager:filemanager_intf",
         "//config:gitconfig",
+    ],
+
+    visibility = [
+        "//visibility:public",
+    ],
+)
+
+cc_library (
+    name = "add_command",
+
+    srcs = [
+        "AddCommand.cpp",
+    ],
+
+    hdrs =  [
+        "AddCommand.h",
+    ],
+
+    deps = [
+        ":command_intf",
+        "//storage/FileManager:filemanager_intf",
+        "//config:gitconfig",
+        "//storage/Objectstore:blob_intf",
+    ],
+
+    visibility = [
+        "//visibility:public",
+    ],
+)
+
+cc_library (
+    name = "commit_command",
+
+    srcs = [
+        "CommitCommand.cpp",
+    ],
+
+    hdrs =  [
+        "CommitCommand.h",
+    ],
+
+    deps = [
+        ":command_intf",
+        "//storage/FileManager:filemanager_intf",
+        "//config:gitconfig",
+        "//storage/Objectstore:blob_intf",
     ],
 
     visibility = [

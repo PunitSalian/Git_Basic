@@ -8,6 +8,7 @@ namespace git
     private:
         GitConfig(){};
         std::string gitDir;
+        std::string gitIndexDir;
         void storeConfig();
         void loadConfig();
 
@@ -15,5 +16,7 @@ namespace git
         static GitConfig &getGitConfigInstance();
         virtual void setGitDir(std::string &&dir) override;
         virtual std::string getGitDir() const override;
+        virtual void setGitIndexDir(std::string &&dir) override;
+        virtual std::string getGitIndexDir() const override;
     };
 }

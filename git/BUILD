@@ -8,6 +8,7 @@ cc_binary (
     deps = [
         ":command_intf",
         ":init_command",
+        ":git_index",
         "//storage/FileManager:filemanager",
         "//config:gitconfig",
         ":add_command",
@@ -53,6 +54,7 @@ cc_library (
 
     deps = [
         ":command_intf",
+        ":git_index_intf",
         "//storage/FileManager:filemanager_intf",
         "//config:gitconfig",
     ],
@@ -74,6 +76,7 @@ cc_library (
     ],
 
     deps = [
+        ":git_index_intf",
         ":command_intf",
         "//storage/FileManager:filemanager_intf",
         "//config:gitconfig",
@@ -101,6 +104,46 @@ cc_library (
         "//storage/FileManager:filemanager_intf",
         "//config:gitconfig",
         "//storage/Objectstore:blob_intf",
+    ],
+
+    visibility = [
+        "//visibility:public",
+    ],
+)
+
+cc_library (
+    name = "git_index_intf",
+
+    srcs = [
+        "GitIndex_intf.h",
+    ],
+
+    deps = [
+        "//common:error",
+        "//common:result",
+    ],
+
+    visibility = [
+        "//visibility:public",
+    ],
+)
+
+cc_library (
+    name = "git_index",
+
+    srcs = [
+        "GitIndex.cpp",
+    ],
+
+    hdrs =  [
+        "GitIndex.h",
+    ],
+
+    deps = [
+        ":git_index_intf",
+        "//storage/FileManager:filemanager_intf",
+        "//config:gitconfig",
+        "//utility/Sha:hash_intf",
     ],
 
     visibility = [

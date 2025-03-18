@@ -9,6 +9,9 @@ Result<std::monostate, ErrorCode> git::AddCommand::execute(std::vector<std::stri
         data.reserve(res.value());
         f_.readFile(f, data);
         auto ret = b_.storeObject(std::move(data), storage::Objecttype::BLOB);
+        std::string val = ret.value();
+        auto f1 = std::filesystem::path(f);
+        gi_.saveStagedFile(f1, std::move(val));
     }
 
     return std::monostate();

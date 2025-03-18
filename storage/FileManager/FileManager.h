@@ -7,7 +7,11 @@ namespace storage
     class FileManager : public FileManagerInterface<T>
     {
     public:
-        FileManager() {}
+        FileManager()
+        {
+            static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, std::filesystem::path>,
+                          "T must be string or std::filesystem::path");
+        }
 
         virtual Result<std::monostate, ErrorCode> createDirectory(const T &param) override;
 
@@ -22,6 +26,10 @@ namespace storage
         virtual Result<std::monostate, ErrorCode> readFile(const T &param, std::span<uint8_t> data) override;
 
         virtual Result<size_t, ErrorCode> writeFile(const T &param, std::span<uint8_t> data) override;
+
+        virtual Result<bool, ErrorCode> isFile(const T &param) override;
+
+        virtual Result<struct stat, ErrorCode> fileStat(const T &param) override;
     };
 }
 

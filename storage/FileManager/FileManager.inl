@@ -125,3 +125,39 @@ Result<size_t, ErrorCode> storage::FileManager<T>::writeFile(const T &param, std
 
     return getFilesize(param);
 }
+
+template <typename T>
+Result<bool, ErrorCode> storage::FileManager<T>::isFile(const T &param)
+{
+    if (!std::filesystem::exists(param))
+    {
+        return ErrorCode::Unknown;
+    }
+    if (std::filesystem::is_regular_file(param))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+template <typename T>
+Result<struct stat, ErrorCode> storage::FileManager<T>::fileStat(const T &param)
+{
+    struct stat fileStat;
+    const char *filePathCStr;
+    if constexpr (std::is_same_v<T, std::filesystem::path>)
+    {
+        std::string pathString = param.string();
+        filePathCStr = pathString.c_str();
+    }
+    else if constexpr (std::is_same_v<T, std::string>)
+    {
+        filePathCStr = param.c_str();
+    }
+    if (stat(filePathCStr, &fileStat) != 0)
+    {
+        return ErrorCode::FailToOpen;
+    }
+    return fileStat;
+}

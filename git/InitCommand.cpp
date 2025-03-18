@@ -27,5 +27,13 @@ Result<std::monostate, ErrorCode> git::InitCommand::execute(std::vector<std::str
         return res.error();
     }
 
+    res = gi_.indexInitFile();
+
+    if (res.is_err())
+    {
+        std::cerr << "Init Command failed indexInitFile" << std::endl;
+        return res.error();
+    }
+
     return std::monostate();
 }

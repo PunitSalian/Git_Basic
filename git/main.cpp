@@ -1,5 +1,6 @@
 #include "Command_intf.h"
 #include "InitCommand.h"
+#include "GitIndex.h"
 #include "AddCommand.h"
 #include "storage/FileManager/FileManager.h"
 #include "config/GitConfig.h"
@@ -13,12 +14,15 @@ int main(int argc, char **argv)
     util::Sha1 h;
     util::Zlib z;
     storage::FileManager<std::filesystem::path> f;
-
     git::GitConfig &g = git::GitConfig::getGitConfigInstance();
     std::filesystem::path currentPath = std::filesystem::current_path() / ".git";
     g.setGitDir(std::move(currentPath.string()));
+    std::cout << "file param index dir" << currentPath << std::endl;
+
     currentPath = std::filesystem::current_path() / ".git" / "index";
+    std::cout << "file param currentPath" << currentPath << std::endl;
     g.setGitIndexDir(std::move(currentPath.string()));
+    git::GitIndex gi(f, g, h);
 
     storage::Blob b(h, f, g, z);
 
@@ -34,12 +38,12 @@ int main(int argc, char **argv)
 
     if (command == "init")
     {
-        git::InitCommand init_comm(f, g);
+        git::InitCommand init_comm(f, g, gi);
         c = &init_comm;
     }
     else if (command == "add")
     {
-        git::AddCommand add_comm(f, g, b);
+        git::AddCommand add_comm(f, g, b, gi);
         c = &add_comm;
     }
     if (c)

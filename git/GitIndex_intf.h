@@ -22,7 +22,7 @@ namespace git
         uint32_t size;
         unsigned char sha1[20];
         uint16_t flags;
-        char path[]; // Variable-length, null-terminated
+        std::string path; // Variable-length, null-terminated
     };
     struct IndexHeader
     {
@@ -39,6 +39,6 @@ namespace git
         virtual ~GitIndex_intf() = default;
         virtual Result<std::monostate, ErrorCode> indexInitFile() = 0;
         virtual Result<std::monostate, ErrorCode> saveStagedFile(const std::variant<std::filesystem::path, std::string> &param, std::string &&sha) = 0;
-        virtual Result<std::vector<std::string>, ErrorCode> getStagedFile() = 0;
+        virtual Result<std::vector<IndexEntry>, ErrorCode> getStagedFile() = 0;
     };
 }

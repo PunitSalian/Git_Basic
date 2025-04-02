@@ -63,18 +63,6 @@ Result<std::vector<git::IndexEntry>, ErrorCode> git::GitIndex::readIndexEntries(
         // Read and convert struct fields to host byte order
         std::memcpy(&entry.stat_entry, buff.data() + offset, 62);
 
-        entry.stat_entry.ctime_sec = ntohl(entry.stat_entry.ctime_sec);
-        entry.stat_entry.ctime_nsec = ntohl(entry.stat_entry.ctime_nsec);
-        entry.stat_entry.mtime_sec = ntohl(entry.stat_entry.mtime_sec);
-        entry.stat_entry.mtime_nsec = ntohl(entry.stat_entry.mtime_nsec);
-        entry.stat_entry.dev = ntohl(entry.stat_entry.dev);
-        entry.stat_entry.ino = ntohl(entry.stat_entry.ino);
-        entry.stat_entry.mode = ntohl(entry.stat_entry.mode);
-        entry.stat_entry.uid = ntohl(entry.stat_entry.uid);
-        entry.stat_entry.gid = ntohl(entry.stat_entry.gid);
-        entry.stat_entry.size = ntohl(entry.stat_entry.size);
-        entry.stat_entry.flags = ntohs(entry.stat_entry.flags);
-
         offset += 62; // Move to file path
 
         // Read path (null-terminated)
@@ -96,33 +84,6 @@ Result<std::vector<git::IndexEntry>, ErrorCode> git::GitIndex::readIndexEntries(
 
         std::cout << "offfset = " << offset << std::endl;
         entries.push_back(entry);
-    }
-
-    // Print all parsed entries to verify correctness
-    std::cout << "Parsed Index Entries:\n";
-    for (size_t i = 0; i < entries.size(); i++)
-    {
-        const auto &entry = entries[i];
-        std::cout << "---------------------------------------\n";
-        std::cout << "Entry #" << i + 1 << " - File: " << entry.file << "\n";
-        std::cout << "  ctime_sec: " << entry.stat_entry.ctime_sec << "\n";
-        std::cout << "  ctime_nsec: " << entry.stat_entry.ctime_nsec << "\n";
-        std::cout << "  mtime_sec: " << entry.stat_entry.mtime_sec << "\n";
-        std::cout << "  mtime_nsec: " << entry.stat_entry.mtime_nsec << "\n";
-        std::cout << "  dev: " << entry.stat_entry.dev << "\n";
-        std::cout << "  ino: " << entry.stat_entry.ino << "\n";
-        std::cout << "  mode: " << std::oct << entry.stat_entry.mode << std::dec << " (octal format)\n";
-        std::cout << "  uid: " << entry.stat_entry.uid << "\n";
-        std::cout << "  gid: " << entry.stat_entry.gid << "\n";
-        std::cout << "  size: " << entry.stat_entry.size << "\n";
-        std::cout << "  flags: " << entry.stat_entry.flags << "\n";
-        std::cout << "  SHA1: ";
-        for (int j = 0; j < 20; j++)
-        {
-            printf("%02x", entry.stat_entry.sha1[j]);
-        }
-        std::cout << std::endl;
-        std::cout << "---------------------------------------\n";
     }
 
     return entries;
@@ -487,26 +448,22 @@ Result<std::monostate, ErrorCode> git::GitIndex::saveStagedFile(
         (uint16_t)0xFFF,       // flags
     };
 
+    newEntry.stat_entry.ctime_sec = htonl(newEntry.stat_entry.ctime_sec);
+    newEntry.stat_entry.ctime_nsec = htonl(newEntry.stat_entry.ctime_nsec);
+    newEntry.stat_entry.mtime_sec = htonl(newEntry.stat_entry.mtime_sec);
+    newEntry.stat_entry.mtime_nsec = htonl(newEntry.stat_entry.mtime_nsec);
+    newEntry.stat_entry.dev = htonl(newEntry.stat_entry.dev);
+    newEntry.stat_entry.ino = htonl(newEntry.stat_entry.ino);
+    newEntry.stat_entry.mode = htonl(newEntry.stat_entry.mode);
+    newEntry.stat_entry.uid = htonl(newEntry.stat_entry.uid);
+    newEntry.stat_entry.gid = htonl(newEntry.stat_entry.gid);
+    newEntry.stat_entry.size = htonl(newEntry.stat_entry.size);
+    newEntry.stat_entry.flags = htons(newEntry.stat_entry.flags);
+
     hexStringToByteArray(sha, newEntry.stat_entry.sha1);
 
     // 🔹 Append the new entry
     entries.push_back(newEntry);
-
-    // 🔹 Convert all entries to **network byte order** before writing
-    for (auto &entry : entries)
-    {
-        entry.stat_entry.ctime_sec = htonl(entry.stat_entry.ctime_sec);
-        entry.stat_entry.ctime_nsec = htonl(entry.stat_entry.ctime_nsec);
-        entry.stat_entry.mtime_sec = htonl(entry.stat_entry.mtime_sec);
-        entry.stat_entry.mtime_nsec = htonl(entry.stat_entry.mtime_nsec);
-        entry.stat_entry.dev = htonl(entry.stat_entry.dev);
-        entry.stat_entry.ino = htonl(entry.stat_entry.ino);
-        entry.stat_entry.mode = htonl(entry.stat_entry.mode);
-        entry.stat_entry.uid = htonl(entry.stat_entry.uid);
-        entry.stat_entry.gid = htonl(entry.stat_entry.gid);
-        entry.stat_entry.size = htonl(entry.stat_entry.size);
-        entry.stat_entry.flags = htons(entry.stat_entry.flags);
-    }
 
     // 🔹 Serialize and write back to index file
     std::vector<uint8_t> data;
@@ -520,10 +477,10 @@ Result<std::monostate, ErrorCode> git::GitIndex::saveStagedFile(
 
     std::cout << "Header size = " << data.size() << ", Entry count = " << entries.size() << std::endl;
 
-    for (size_t i = 0; i < entries.size(); ++i)
+    // 🔹 Iterate over entries (without applying htonl again)
+    for (const auto &entry : entries)
     {
-        const auto &entry = entries[i];
-        // Write IndexStatEntry (now in network byte order)
+        // Write IndexStatEntry (already in network byte order)
         const uint8_t *entryBytes = reinterpret_cast<const uint8_t *>(&entry.stat_entry);
         data.insert(data.end(), entryBytes, entryBytes + sizeof(IndexStatEntry));
 

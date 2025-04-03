@@ -14,5 +14,6 @@ enum class ErrorCode
     Unimplemented,    // Feature not implemented
     Cancelled,        // Operation cancelled
     FailToOpen,       // Failed to Open
+    InvalidFile,      // Invalid File
     Unknown           // Unknown error
 };

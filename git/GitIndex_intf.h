@@ -8,7 +8,7 @@
 namespace git
 {
 #pragma pack(push, 1) // Ensure no padding in struct
-    struct IndexEntry
+    struct IndexStatEntry
     {
         uint32_t ctime_sec;
         uint32_t ctime_nsec;
@@ -22,7 +22,6 @@ namespace git
         uint32_t size;
         unsigned char sha1[20];
         uint16_t flags;
-        char path[]; // Variable-length, null-terminated
     };
     struct IndexHeader
     {
@@ -32,13 +31,17 @@ namespace git
         char extension_sign[4];
     };
 #pragma pack(pop) // Restore default alignment
-
+    struct IndexEntry
+    {
+        IndexStatEntry stat_entry;
+        std::string file;
+    };
     class GitIndex_intf
     {
     public:
         virtual ~GitIndex_intf() = default;
         virtual Result<std::monostate, ErrorCode> indexInitFile() = 0;
         virtual Result<std::monostate, ErrorCode> saveStagedFile(const std::variant<std::filesystem::path, std::string> &param, std::string &&sha) = 0;
-        virtual Result<std::vector<std::string>, ErrorCode> getStagedFile() = 0;
+        virtual Result<std::vector<IndexEntry>, ErrorCode> getStagedFile() = 0;
     };
 }

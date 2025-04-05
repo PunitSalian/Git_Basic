@@ -62,7 +62,7 @@ Result<std::string, ErrorCode> storage::Blob::storeObject(std::vector<uint8_t> &
 
     data.insert(data.begin(), blob_data.begin(), blob_data.end());
 
-    std::string hash = hash_.computeHash(data);
+    std::string hash = util::toHexString(hash_.computeHash(data));
 
     std::cout << "storeBlob hash " << hash << std::endl;
 

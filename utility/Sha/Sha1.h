@@ -10,6 +10,6 @@ namespace util
         {
         }
 
-        virtual std::string computeHash(std::span<uint8_t> data) override;
+        virtual std::array<uint8_t, SHA_DIGEST_LENGTH> computeHash(std::span<uint8_t> data) override;
     };
 }

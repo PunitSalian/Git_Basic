@@ -8,6 +8,16 @@
 
 namespace util
 {
+        inline std::string toHexString(std::span<const uint8_t, SHA_DIGEST_LENGTH> hash)
+        {
+                std::ostringstream oss;
+                for (uint8_t byte : hash)
+                {
+                        oss << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
+                }
+                return oss.str();
+        }
+
         inline std::string toHexString(const std::array<uint8_t, SHA_DIGEST_LENGTH> &hash)
         {
                 std::ostringstream oss;

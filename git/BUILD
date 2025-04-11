@@ -9,6 +9,7 @@ cc_binary (
         ":command_intf",
         ":init_command",
         ":git_index",
+        ":tree",
         "//storage/FileManager:filemanager",
         "//config:gitconfig",
         ":add_command",
@@ -101,6 +102,7 @@ cc_library (
 
     deps = [
         ":command_intf",
+        ":tree",
         "//storage/FileManager:filemanager_intf",
         "//config:gitconfig",
         "//storage/Objectstore:blob_intf",
@@ -144,6 +146,29 @@ cc_library (
         "//storage/FileManager:filemanager_intf",
         "//config:gitconfig",
         "//utility/Sha:hash_intf",
+    ],
+
+    visibility = [
+        "//visibility:public",
+    ],
+)
+
+cc_library (
+    name = "tree",
+
+    srcs = [
+        "Tree.cpp",
+    ],
+
+    hdrs =  [
+        "Tree.h",
+    ],
+
+    deps = [
+        "//utility/Sha:hash_intf",
+        ":git_index_intf",
+        "//storage/Objectstore:blob_intf",
+        "//storage/FileManager:filemanager_intf",
     ],
 
     visibility = [

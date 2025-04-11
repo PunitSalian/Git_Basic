@@ -1,6 +1,8 @@
 #include "Command_intf.h"
+#include "CommitCommand.h"
 #include "InitCommand.h"
 #include "GitIndex.h"
+#include "Tree.h"
 #include "AddCommand.h"
 #include "storage/FileManager/FileManager.h"
 #include "config/GitConfig.h"
@@ -26,6 +28,7 @@ int main(int argc, char **argv)
 
     storage::Blob b(h, f, g, z);
 
+    git::TreeBuilder t(b, f);
     TCLAP::CmdLine cmd("my_git utility", ' ', "1.0", false);
     TCLAP::UnlabeledValueArg<std::string> firstArg("command", "Git command", true, "", "string", cmd);
     TCLAP::UnlabeledMultiArg<std::string> argsArg(
@@ -45,6 +48,11 @@ int main(int argc, char **argv)
     {
         git::AddCommand add_comm(f, g, b, gi);
         c = &add_comm;
+    }
+    else if (command == "commit")
+    {
+        git::CommitCommand commit_comm(t, gi);
+        c = &commit_comm;
     }
     if (c)
         c->execute(std::move(args));

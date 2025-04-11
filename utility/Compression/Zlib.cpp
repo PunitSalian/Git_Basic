@@ -3,21 +3,56 @@
 #include <vector>
 #include <stdexcept>
 #include <cstring>
+#include <iostream>
+#include <iomanip>
 
 Result<std::vector<uint8_t>, ErrorCode> util::Zlib::compress(std::span<uint8_t> data)
 {
-    uLong sourceSize = data.size();
-    uLong destSize = compressBound(sourceSize); // Get max compressed size
-    std::vector<uint8_t> compressedData(sizeof(uLong) + destSize);
-    std::memcpy(compressedData.data(), &sourceSize, sizeof(uLong));
-
-    int result = ::compress(compressedData.data() + sizeof(uLong), &destSize, data.data(), sourceSize);
-    if (result != Z_OK)
+    if (data.empty())
     {
-        throw std::runtime_error("Compression failed");
+        return ErrorCode::InvalidArgument;
     }
 
-    compressedData.resize(sizeof(uLong) + destSize); // Resize to actual compressed size
+    z_stream zs;
+    zs.zalloc = Z_NULL;
+    zs.zfree = Z_NULL;
+    zs.opaque = Z_NULL;
+    zs.avail_in = static_cast<uInt>(data.size());
+    zs.next_in = const_cast<Bytef *>(data.data());
+    zs.avail_out = 0;
+    zs.next_out = Z_NULL;
+
+    if (deflateInit(&zs, Z_BEST_COMPRESSION) != Z_OK)
+    {
+        throw std::runtime_error("deflateInit failed while compressing.");
+    }
+
+    std::vector<unsigned char> compressedData;
+    unsigned char outBuffer[4096];
+
+    do
+    {
+        zs.avail_out = sizeof(outBuffer);
+        zs.next_out = outBuffer;
+
+        if (deflate(&zs, Z_FINISH) == Z_STREAM_ERROR)
+        {
+            deflateEnd(&zs);
+            throw std::runtime_error("deflate failed while compressing.");
+        }
+
+        size_t compressedSize = sizeof(outBuffer) - zs.avail_out;
+        if (compressedSize > 0)
+        {
+            compressedData.insert(compressedData.end(), outBuffer, outBuffer + compressedSize);
+        }
+    } while (zs.avail_out == 0);
+
+    if (deflateEnd(&zs) != Z_OK)
+    {
+        throw std::runtime_error("deflateEnd failed while compressing.");
+    }
+
     return compressedData;
 }
 

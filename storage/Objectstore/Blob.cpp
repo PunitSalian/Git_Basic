@@ -50,6 +50,7 @@ Result<std::pair<storage::Objecttype, std::vector<uint8_t>>, ErrorCode> storage:
 
 Result<std::string, ErrorCode> storage::Blob::storeObject(std::vector<uint8_t> &&data, storage::Objecttype blobtype)
 {
+
     // Append the blob header with the size, helps while retriving the blob
     std::string blob_header = storage::objectToString.at(blobtype) + " " + std::to_string(data.size()) + "\0";
 
@@ -67,7 +68,7 @@ Result<std::string, ErrorCode> storage::Blob::storeObject(std::vector<uint8_t> &
     std::cout << "storeBlob hash " << hash << std::endl;
 
     // Create a directory with the first 2 chars of the sha
-    std::string new_dir = gitconfig_.getGitDir() + hash.substr(0, 2);
+    std::string new_dir = gitconfig_.getGitDir() + "/objects/" + hash.substr(0, 2);
 
     auto res = filemgr_.createDirectory(new_dir);
 
@@ -86,19 +87,16 @@ Result<std::string, ErrorCode> storage::Blob::storeObject(std::vector<uint8_t> &
         std::cerr << "storeBlob Creating file not successful " << static_cast<uint16_t>(res.error()) << std::endl;
         return ErrorCode::FailToOpen;
     }
-    // File Blob should be compressed.
-    if (blobtype == storage::Objecttype::BLOB)
+
+    Result<std::vector<uint8_t>, ErrorCode> compress_data_res = compress_handle_.compress(std::span<uint8_t>(data.data(), data.size()));
+
+    if (compress_data_res.is_err())
     {
-        Result<std::vector<uint8_t>, ErrorCode> compress_data_res = compress_handle_.compress(std::span<uint8_t>(data.data() + blob_data.size(), data.size() - blob_data.size()));
-
-        if (compress_data_res.is_err())
-        {
-            std::cerr << "storeBlob compression file failed " << static_cast<uint16_t>(compress_data_res.error()) << std::endl;
-            return ErrorCode::InternalError;
-        }
-
-        data = std::move(compress_data_res.value());
+        std::cerr << "storeBlob compression file failed " << static_cast<uint16_t>(compress_data_res.error()) << std::endl;
+        return ErrorCode::InternalError;
     }
+
+    data = std::move(compress_data_res.value());
 
     auto wr_res = filemgr_.writeFile(new_file, std::span<unsigned char>(data.data(), data.size()));
 

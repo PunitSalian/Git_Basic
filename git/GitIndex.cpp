@@ -184,8 +184,8 @@ Result<std::monostate, ErrorCode> git::GitIndex::saveStagedFile(
     newEntry.stat_entry.size = htonl(newEntry.stat_entry.size);
     newEntry.stat_entry.flags = htons(newEntry.stat_entry.flags);
     auto sha_hex = util::fromHexString(sha);
-    memcpy(sha_hex.data(), newEntry.stat_entry.sha1, sha_hex.size());
 
+    memcpy(newEntry.stat_entry.sha1, sha_hex.data(), sha_hex.size());
     // 🔹 Append the new entry
     entries.push_back(newEntry);
 

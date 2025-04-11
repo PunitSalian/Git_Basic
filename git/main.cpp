@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     }
     else if (command == "commit")
     {
-        git::CommitCommand commit_comm(t, gi);
+        git::CommitCommand commit_comm(t, gi, b);
         c = &commit_comm;
     }
     if (c)

@@ -2,7 +2,7 @@
 #include "Command_intf.h"
 #include "storage/FileManager/FileManagerInterface.h"
 #include "config/GitConfig.h"
-#include "GitIndex_intf.h"
+#include "core/GitIndex_intf.h"
 #include <filesystem>
 
 namespace git

@@ -1,6 +1,6 @@
 #pragma once
 #include "Command_intf.h"
-#include "GitIndex_intf.h"
+#include "core/GitIndex_intf.h"
 #include "storage/Objectstore/Blob_intf.h"
 #include "storage/FileManager/FileManagerInterface.h"
 #include "config/GitConfig.h"

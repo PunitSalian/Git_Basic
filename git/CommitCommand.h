@@ -4,7 +4,7 @@
 #include "storage/FileManager/FileManagerInterface.h"
 #include "storage/Objectstore/Blob_intf.h"
 #include <filesystem>
-#include "Tree.h"
+#include "core/Tree.h"
 
 namespace git
 {

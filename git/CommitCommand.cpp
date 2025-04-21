@@ -1,5 +1,4 @@
 #include "CommitCommand.h"
-#include "Tree.h"
 #include <iostream>
 
 Result<std::monostate, ErrorCode> git::CommitCommand::execute(std::vector<std::string> &&args)
@@ -16,10 +15,6 @@ Result<std::monostate, ErrorCode> git::CommitCommand::execute(std::vector<std::s
     std::ostringstream oss;
 
     oss << "tree " << res.value() << "\n";
-    // if (parentHash)
-    // {
-    //     oss << "parent " << *parentHash << "\n";
-    // }
 
     oss << "author "
         << "Punit Salian"

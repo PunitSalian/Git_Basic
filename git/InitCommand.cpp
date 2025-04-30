@@ -19,6 +19,14 @@ Result<std::monostate, ErrorCode> git::InitCommand::execute(std::vector<std::str
         return res.error();
     }
 
+    res = f_.createDirectory(g_.getGitDir() + "/refs/heads/");
+
+    if (res.is_err())
+    {
+        std::cerr << "Init Command failed createDirectory refs/heads" << std::endl;
+        return res.error();
+    }
+
     res = f_.createFile(g_.getGitDir() + "/index");
 
     if (res.is_err())
@@ -37,7 +45,7 @@ Result<std::monostate, ErrorCode> git::InitCommand::execute(std::vector<std::str
         return res.error();
     }
 
-    std::string branchReference = "ref: refs/heads/temp-branch\n";
+    std::string branchReference = "ref: refs/heads/temp-branch";
 
     std::span<uint8_t> branchSpan(reinterpret_cast<uint8_t *>(branchReference.data()), branchReference.size());
 

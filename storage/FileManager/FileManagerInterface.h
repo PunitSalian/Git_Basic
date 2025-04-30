@@ -24,7 +24,7 @@ namespace storage
 
         virtual Result<std::monostate, ErrorCode> readFile(const T &param, std::span<uint8_t> data) = 0;
 
-        virtual Result<size_t, ErrorCode> writeFile(const T &param, std::span<uint8_t> data) = 0;
+        virtual Result<size_t, ErrorCode> writeFile(const T &param, std::span<const uint8_t> data) = 0;
 
         virtual Result<bool, ErrorCode> isFile(const T &param) = 0;
 

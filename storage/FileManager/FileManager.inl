@@ -39,7 +39,7 @@ template <typename T>
 Result<std::monostate, ErrorCode> storage::FileManager<T>::createFile(const T &param)
 {
     std::ofstream file(param);
-
+    std::cout << "File to create " << param << std::endl;
     if (!file.good())
     {
         return ErrorCode::Unknown;
@@ -106,7 +106,7 @@ Result<std::monostate, ErrorCode> storage::FileManager<T>::readFile(const T &par
 }
 
 template <typename T>
-Result<size_t, ErrorCode> storage::FileManager<T>::writeFile(const T &param, std::span<uint8_t> buffer)
+Result<size_t, ErrorCode> storage::FileManager<T>::writeFile(const T &param, std::span<const uint8_t> buffer)
 {
 
     if (!std::filesystem::exists(param) && !std::filesystem::is_regular_file(param))
@@ -121,7 +121,7 @@ Result<size_t, ErrorCode> storage::FileManager<T>::writeFile(const T &param, std
         return ErrorCode::FailToOpen;
     }
 
-    file.write(reinterpret_cast<char *>(buffer.data()), buffer.size());
+    file.write(reinterpret_cast<const char *>(buffer.data()), buffer.size());
 
     return getFilesize(param);
 }
